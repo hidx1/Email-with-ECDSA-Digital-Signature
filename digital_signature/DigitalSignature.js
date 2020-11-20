@@ -3,19 +3,24 @@ function sign(message, privateKey) {
 
     var signature = RSA(messageDigest, privateKey);
 
-    var signedMessage = message + "\n--BEGIN SIGNATURE--\n" + signature + "\n--END SIGNATURE--";
+    var signedMessage = "--BEGIN SIGNATURE--\n" + signature + "\n--END SIGNATURE--\n" + message;
 
     return signedMessage;
 }
 
 function verify(embedMessage, publicKey) {
 
-    var messageArray = embedMessage.split("\n--BEGIN SIGNATURE--\n");
+    var messageArray = embedMessage.split("\n--END SIGNATURE--\n");
 
-    var message = messageArray[0];
+    var signature = messageArray[0].split("--BEGIN SIGNATURE--\n")[1];
+    
+    var message = ""
+    for (let i = 1; i < messageArray.length; i++) {
+        message += messageArray[i]
+    }
 
-    var signature = messageArray[1];
-    signature = signature.split("\n--END SIGNATURE--")[0];
+    console.log("signature: " + signature)
+    console.log("message: " + message)
 
     var messageDigest1 = RSA(signature, publicKey);
 
