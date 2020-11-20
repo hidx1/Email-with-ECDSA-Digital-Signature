@@ -1,3 +1,7 @@
+import {
+    convertStringToBinaryString,
+} from './helper';
+
 function sign(message, privateKey) {
     var messageDigest = keccak(message);
 
@@ -24,12 +28,19 @@ function verify(embedMessage, publicKey) {
     return messageDigest1 === messageDigest2;
 }
 
-function keccak(message) {
-
-    return "thisisasignature";
+function keccak(message, d=512, r=576, c=1024) {
+    let binaryString = convertStringToBinaryString(message);
+    console.log(binaryString);
+    return message;
 }
 
 function RSA(messageDigest, key) {
 
     return messageDigest;
 }
+
+export {
+    sign,
+    verify,
+    keccak,
+};
