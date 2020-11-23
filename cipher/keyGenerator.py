@@ -41,21 +41,3 @@ class KeyGenerator:
         self.key = self.subKey + self.crossKey
         for i in range(0, len(self.key), 3):
             self.key += self.key[i + pick]
-
-if __name__ == "__main__":
-    test_case = 'waef290e'
-    test_case = h.convertStringToBinary64(test_case)[0]
-
-    keygen = KeyGenerator(test_case, 1, 2)
-    print(keygen)
-    keygen.round()
-
-    print(keygen.subKey)
-    print(keygen.crossKey)
-
-    keygen.round()
-    print(keygen.subKey)
-    print(keygen.crossKey)
-
-
-

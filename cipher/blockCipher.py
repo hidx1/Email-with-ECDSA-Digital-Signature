@@ -128,36 +128,20 @@ class BlockCipher:
         
         return xorResult
 
-if __name__ == "__main__":
-    is_file = input("Is input file?(Y/N) ").lower()
-    is_file = is_file == "y"
-
-    if (is_file):
-        input_string = input("Insert filename: ")
+if __name__ == "__main__":    
+    if (len(sys.argv) != 4):
+        print("Argument must be blockCipher.py [input_string] [key] [true if encrypt]")
     else:
-        input_string = input("Insert text: ")
-        
-    key = input("Insert key (8 characters): ")
-    if len(key) != 8:
-        print("Key must be 8 characters")
-        sys.exit()
-
-    mode = input("Insert mode (ECB/CBC/Counter): ").lower()
-    if not (mode == "ecb" or mode == "cbc" or mode == "counter"):
-        print("Mode must either be ECB/CBC/Counter")
-        sys.exit()
-
-    encrypt = input("Is this encrypt?(Y/N) ").lower()
-    encrypt = encrypt == "y"
-
-    if (is_file):
-        output_name = input("Insert output file name: ")
-    else:
+        input_string = sys.argv[1]
+        key = sys.argv[2]
+        encrypt = sys.argv[3] == "true"
+        is_file = False
+        mode = "cbc"
         output_name = False
 
-    bc = BlockCipher()
-    bc.set_initial(encrypt, input_string, is_file)
-    bc.set_key(key)
-    bc.execute(mode, encrypt)
-    result = bc.write_result(encrypt, output_name, is_file)
-    print(result)
+        bc = BlockCipher()
+        bc.set_initial(encrypt, input_string, is_file)
+        bc.set_key(key)
+        bc.execute(mode, encrypt)
+        result = bc.write_result(encrypt, output_name, is_file).upper()
+        print(result)

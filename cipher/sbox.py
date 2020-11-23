@@ -88,7 +88,3 @@ class SBox:
             result += h.convertIntToBit(result_int, 4)
         
         return result
-
-if __name__ == "__main__":
-    sbox = SBox(2)
-    print(sbox.execute48_24(generateTest()))
