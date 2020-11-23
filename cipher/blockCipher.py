@@ -143,5 +143,5 @@ if __name__ == "__main__":
         bc.set_initial(encrypt, input_string, is_file)
         bc.set_key(key)
         bc.execute(mode, encrypt)
-        result = bc.write_result(encrypt, output_name, is_file).upper()
+        result = bc.write_result(encrypt, output_name, is_file)
         print(result)
