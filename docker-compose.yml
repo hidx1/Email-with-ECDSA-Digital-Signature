@@ -1,30 +1,22 @@
 version: '3'
 
 services:
-  manpro_bot:
+  kripto-backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: ./Dockerfile
-    image: manpro/manpro_bot:latest
-    container_name: manpro_bot
+    image: kripto/backend:latest
+    container_name: kripto-backend
     environment:
-      MONGODB_URI: mongodb://botmanproiit:asdf41msdafk324n325asdf41msdafk324n325@mongodb:27017/manpro_bot?authSource=admin
-      PORT: 3000
-      LINE_CHANNEL_SECRET: 18b7cca7e09841cbeb9189c262d14e96
-      LINE_CHANNEL_ACCESS_TOKEN: zQgzxN2q7c03SyYCnr45JeO51hAYUblzUbHe06+Pp3EEczwxepePVdpAZ3tRSYuLKHfWI+erxaKZY19zTFz1Sfsatv/xt18j7Aq5vpJrqjCLtVteU/GvL/n0vr5w4TTWzOz7ZBzo/i7s1ZrX/iVBNwdB04t89/1O/w1cDnyilFU=
-      DD_API_KEY: 6a4535924a7b91e0d6beb407fc7abb2a
+      NODE_ENV: production
+      API_PREFIX: /api
+      MONGODB_URI: mongodb+srv://user:password@cluster0.or29e.mongodb.net/kriptografi_prod?retryWrites=true&w=majority
+      PORT: 4000
+      GAUTH_CLIENT_ID: example
+      GAUTH_CLIENT_SECRET: example
+      GAUTH_CALLBACK_URL: example
+      SESSION_SECRET: example
+      DD_API_KEY: example
     ports:
-      - 10012:3000
+      - 4000:4000
     restart: unless-stopped
-    depends_on:
-      - mongodb
-
-  mongodb:
-    image: mongo:4.0
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: botmanproiit
-      MONGO_INITDB_ROOT_PASSWORD: asdf41msdafk324n325asdf41msdafk324n325
-    volumes:
-      - ./database:/data/db
-    ports:
-      - 10011:27017
