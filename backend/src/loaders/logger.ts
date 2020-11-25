@@ -9,7 +9,7 @@ export class Logger {
     constructor({ options, stream }: { options?: pino.LoggerOptions; stream?: pino.DestinationStream }) {
         const context = {
             environment: process.env.NODE_ENV || 'development',
-            service: 'manpro-bot',
+            service: 'kripto-backend',
         };
 
         const defaultOptions: pino.LoggerOptions = {
