@@ -1,2 +1,4 @@
 backend/node_modules
+gui/node_modules
+gui/build
 *.pyc
