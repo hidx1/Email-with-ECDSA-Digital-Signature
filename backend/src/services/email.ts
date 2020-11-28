@@ -113,6 +113,11 @@ export default class EmailService {
                     emailBody = await this.EncryptText(plaintext, key);
                 }
 
+                if (signature) {
+                    let hash = await this.GenerateHash(plaintext);
+                    emailBody += `\n${hash}`;
+                }
+
                 let transport = createTransport(refreshToken, userEmail);
 
                 let email = { from: userEmail, to: destination, subject, text: emailBody };
@@ -153,5 +158,18 @@ export default class EmailService {
             subject,
             text,
         };
+    }
+
+    public async GenerateHash(text: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            PythonShell.run(`${__dirname}/../../digital_signature/sha3.py`, { args: [text] }, (err, result) => {
+                if (err) {
+                    return reject(err);
+                }
+                let hash = result[0];
+                let signature = `---BEGIN_SIGNATURE---\n${hash}\n---END_SIGNATURE---`;
+                resolve(signature);
+            });
+        });
     }
 }
