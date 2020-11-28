@@ -18,8 +18,9 @@ export default (app: Router) => {
             const type = req.query.type as string;
 
             let emails = await emailService.GetEmails(refreshToken, type.toUpperCase());
+            let payload = { emails, user_email: user.email };
 
-            const { response, status } = ResponseCreator(emails);
+            const { response, status } = ResponseCreator(payload);
             res.status(status).send(response);
         } catch (error) {
             logger.error(error, {}, 'Failed getting emails');
