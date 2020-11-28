@@ -7,6 +7,7 @@ import configurePassport from './passport';
 import configureSession from './session';
 import passport from 'passport';
 import { Connection } from 'mongoose';
+import { ResponseCreator } from '../utils/utils';
 
 export default ({ app, mongooseConnection }: { app: Application; mongooseConnection: Connection }) => {
     logger.setupLoggingMiddleware(app);
@@ -41,9 +42,8 @@ export default ({ app, mongooseConnection }: { app: Application; mongooseConnect
     // eslint-disable-next-line
     app.use((err, req:Request, res, next) => {
         logger.error(err, { location: 'ExpressErrorHandler' }, 'Unexpected Error');
-        res.status(500).send({
-            payload: null,
-            message: 'Unexpected error happened!',
-        });
+        const { status, response } = ResponseCreator(null, err);
+
+        res.status(status).send(response);
     });
 };
