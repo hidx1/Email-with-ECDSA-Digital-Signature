@@ -14,7 +14,12 @@ export default ({ app, mongooseConnection }: { app: Application; mongooseConnect
 
     app.enable('trust proxy');
 
-    app.use(cors());
+    let corsOptions = {
+        credentials: true,
+        origin: process.env.NODE_ENV === 'production' ? ['localhost'] : true,
+    };
+
+    app.use(cors(corsOptions));
 
     app.get('/status', (req, res) => {
         res.status(200).end();
