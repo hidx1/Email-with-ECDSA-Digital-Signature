@@ -137,10 +137,22 @@ export default class EmailService {
     }
 
     public async EncryptText(plaintext: string, key: string): Promise<string> {
+        return await this.ExecuteBlockCipher(plaintext, key, false);
+    }
+
+    public async DecryptText(cipherText: string, key: string): Promise<string> {
+        return await this.ExecuteBlockCipher(cipherText, key, false);
+    }
+
+    public ExecuteBlockCipher(content: string, key: string, encrypt: boolean): Promise<string> {
+        let operation = 'false';
+        if (encrypt) {
+            operation = 'true';
+        }
         return new Promise((resolve, reject) => {
             PythonShell.run(
                 `${__dirname}/../../cipher/blockCipher.py`,
-                { args: [plaintext, key, 'true'] },
+                { args: [content, key, operation] },
                 (err, result) => {
                     if (err) {
                         return reject(err);
@@ -160,16 +172,53 @@ export default class EmailService {
         };
     }
 
-    public async GenerateHash(text: string): Promise<string> {
+    public async GenerateHash(text: string, withHeader = true): Promise<string> {
         return new Promise((resolve, reject) => {
             PythonShell.run(`${__dirname}/../../digital_signature/sha3.py`, { args: [text] }, (err, result) => {
                 if (err) {
                     return reject(err);
                 }
                 let hash = result[0];
-                let signature = `---BEGIN_SIGNATURE---\n${hash}\n---END_SIGNATURE---`;
-                resolve(signature);
+                if (withHeader) {
+                    let signature = `---BEGIN_SIGNATURE---\n${hash}\n---END_SIGNATURE---`;
+                    resolve(signature);
+                } else {
+                    resolve(hash);
+                }
             });
         });
+    }
+
+    public ExtractBody(email: string): string {
+        let body = email.match(/(.+)(\r\n)/)[1];
+        return body;
+    }
+
+    public async Verification(body: string, key: string, decrypt: boolean, verifySignature: boolean) {
+        let decryptedBody = undefined;
+        let signatureValidity = undefined;
+
+        let result = {};
+        let emailText = this.ExtractBody(body);
+        if (decrypt) {
+            decryptedBody = await this.DecryptText(emailText, key);
+            result['decrypted_body'] = decryptedBody;
+        }
+
+        if (verifySignature) {
+            let signature: string;
+
+            let originalSignature = body.match(/(BEGIN_SIGNATURE---\r\n)(.+)(\r\n---END_SIGNATURE)/)[2];
+            if (decrypt) {
+                signature = await this.GenerateHash(decryptedBody, false);
+            } else {
+                signature = await this.GenerateHash(emailText, false);
+            }
+
+            signatureValidity = signature === originalSignature;
+            result['signature_validity'] = signatureValidity;
+        }
+
+        return result;
     }
 }
