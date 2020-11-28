@@ -20,7 +20,7 @@ const configureSession = (app: Application, mongooseConnection: mongoose.Connect
                 path: '/',
                 secure: process.env.NODE_ENV === 'production' ? true : false,
                 httpOnly: false,
-                sameSite: 'strict',
+                sameSite: 'none',
                 maxAge: 2 * 24 * 3600 * 1000, // 2days
             },
         }),
