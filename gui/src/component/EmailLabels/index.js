@@ -12,8 +12,6 @@ class EmailLabels extends React.Component {
   }
 
   componentDidMount(){
-    console.log('labels')
-    
   }
    
     

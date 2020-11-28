@@ -5,6 +5,7 @@ import './App.css';
 import NavBar from './component/NavBar';
 import MainContainer from './component/MainContainer';
 
+/**JANGAN LUPA ENABLE CORS DI BROWSER (BISA PAKE CORS EVERYWHERE DI FIREFOX) */
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -17,8 +18,11 @@ class App extends React.Component {
   }
 
   signIn() {
+    /****************PAKE INI KALAU BELUM ADA COOKIE**************************/
     let signInWindow = window.open("https://backend-kripto.yoelsusanto.com/api/gauth/authorization_url", "_blank", "status=yes");
+    let thats = this;
     let timer = setInterval(function() {
+      let that = thats;
       if (signInWindow.closed) {
         clearInterval(timer);
         axios({
@@ -26,8 +30,8 @@ class App extends React.Component {
           method: "get",
           withCredentials: true,
         })
-        .then(response => {
-          this.setState({
+        .then((response) => {
+          that.setState({
             signedIn: true,
             user: response.data.payload.user_email,
             inbox: response.data.payload.emails
@@ -35,9 +39,23 @@ class App extends React.Component {
         });
       }
     }, 2000);
+
+    /***********PAKE INI AJA KALAU UDAH ADA COOKIE*************/
+    // axios({
+    //   url: "https://backend-kripto.yoelsusanto.com/api/email?type=inbox",
+    //   method: "get",
+    //   withCredentials: true,
+    // })
+    // .then((response) => {
+    //   this.setState({
+    //     signedIn: true,
+    //     user: response.data.payload.user_email,
+    //     inbox: response.data.payload.emails
+    //   });
+    // });
   }
 
-  render(){
+  render() {
     const { signedIn, user, inbox } = this.state;
     return (
       <div>

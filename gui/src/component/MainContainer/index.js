@@ -56,6 +56,9 @@ class MainContainer extends React.Component {
       }
     }
     componentDidMount(){
+      const { inbox } = this.props;
+      console.log(inbox)
+      
       let labels= [...this.state.labels]
 
       labels[2].emailNumber= this.state.numberOfSentEmail+1
