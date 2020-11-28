@@ -50,5 +50,22 @@ export default (app: Router) => {
         }
     });
 
+    route.post('/verification', async (req, res, next) => {
+        try {
+            const decrypt = req.query.decrypt === 'true';
+            const verifySignature = req.query.verify_signature === 'true';
+
+            const { body, key } = req.body;
+
+            let result = await emailService.Verification(body, key, decrypt, verifySignature);
+
+            const { response, status } = ResponseCreator(result);
+            res.status(status).send(response);
+        } catch (error) {
+            logger.error(error, {}, 'Failed to send email');
+            next(error);
+        }
+    });
+
     app.use('/email', route);
 };
