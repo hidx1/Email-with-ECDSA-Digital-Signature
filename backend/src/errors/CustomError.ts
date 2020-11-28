@@ -6,4 +6,6 @@ export abstract class CustomError extends Error {
         this.context = context;
         Error.captureStackTrace(this, this.constructor);
     }
+
+    abstract toResponse(): { status: number; message: string; payload: any };
 }

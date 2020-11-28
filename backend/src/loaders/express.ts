@@ -7,13 +7,19 @@ import configurePassport from './passport';
 import configureSession from './session';
 import passport from 'passport';
 import { Connection } from 'mongoose';
+import { ResponseCreator } from '../utils/utils';
 
 export default ({ app, mongooseConnection }: { app: Application; mongooseConnection: Connection }) => {
     logger.setupLoggingMiddleware(app);
 
     app.enable('trust proxy');
 
-    app.use(cors());
+    let corsOptions = {
+        credentials: true,
+        origin: process.env.NODE_ENV === 'production' ? ['localhost'] : true,
+    };
+
+    app.use(cors(corsOptions));
 
     app.get('/status', (req, res) => {
         res.status(200).end();
@@ -41,9 +47,8 @@ export default ({ app, mongooseConnection }: { app: Application; mongooseConnect
     // eslint-disable-next-line
     app.use((err, req:Request, res, next) => {
         logger.error(err, { location: 'ExpressErrorHandler' }, 'Unexpected Error');
-        res.status(500).send({
-            payload: null,
-            message: 'Unexpected error happened!',
-        });
+        const { status, response } = ResponseCreator(null, err);
+
+        res.status(status).send(response);
     });
 };
