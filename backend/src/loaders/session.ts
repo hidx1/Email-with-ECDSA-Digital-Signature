@@ -18,7 +18,7 @@ const configureSession = (app: Application, mongooseConnection: mongoose.Connect
             proxy: process.env.NODE_ENV === 'production' ? true : false,
             cookie: {
                 path: '/',
-                secure: process.env.NODE_ENV === 'production' ? true : false,
+                secure: false,
                 httpOnly: false,
                 sameSite: 'none',
                 maxAge: 2 * 24 * 3600 * 1000, // 2days
