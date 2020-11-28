@@ -10,7 +10,7 @@ export default (app: Router) => {
     let logger: Logger = Container.get('logger');
     let emailService = Container.get(EmailService);
 
-    route.get('/', async (req, res) => {
+    route.get('/', isAuthenticated, async (req, res) => {
         try {
             const user = req.user as any;
             const refreshToken = user.refreshToken;
