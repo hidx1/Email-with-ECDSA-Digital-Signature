@@ -1,42 +1,65 @@
-from .signature import Signature
-from .math import Math
-from .utils.binary import BinaryAscii
-from .utils.integer import RandomInteger
-from .utils.compatibility import *
+from operation import *
+from curve import Curve
+import random
+from sha3 import *
 
-class Ecdsa:
+def generateKey():
+    curve = Curve()
+    d = random.randint(1, curve.n-1)
+    Q = multiply(curve.G, d)
 
-    @classmethod
-    def sign(cls, message, privateKey, hashfunc=sha256):
-        messageDigest = hashfunc(toBytes(message)).digest()
-        e = BinaryAscii.numberFromString(messageDigest)
-        curve = privateKey.curve
+    privateKey = d
+    publicKey = Q
 
-        r, s, randSignPoint = 0, 0, None
-        while r == 0 or s == 0:
-            randNum = RandomInteger.between(1, curve.N - 1)
-            randSignPoint = Math.multiply(
-                curve.G, n=randNum, A=curve.A, P=curve.P, N=curve.N)
-            r = randSignPoint.x % curve.N
-            s = ((numberMessage + r * privateKey.secret)
-                 * (Math.inv(randNum, curve.N))) % curve.N
-        recoveryId = randSignPoint.y & 1
-        if randSignPoint.y > curve.N:
-            recoveryId += 2
+    return publicKey, privateKey
 
-        return Signature(r=r, s=s, recoveryId=recoveryId)
+def sign(message, privateKey):
+    curve = Curve()
+    r = 0
+    s = 0
+    while r == 0 or s == 0:
+        k = random.randint(1, curve.n-1)
+        R = multiply(curve.G, k)
+        R.x = int(R.x)
+        r = R.x % curve.n
+        modResult = pow(k, -1, curve.n)
+        byteMessageDigest = bytearray(sha3(message))
+        e = 0
+        for byte in byteMessageDigest:
+            e += byte
+        s = (modResult * (e + privateKey * r)) % curve.n
 
-    @classmethod
-    def verify(cls, message, signature, publicKey, hashfunc=sha256):
-        hashMessage = hashfunc(toBytes(message)).digest()
-        numberMessage = BinaryAscii.numberFromString(hashMessage)
-        curve = publicKey.curve
-        sigR = signature.r
-        sigS = signature.s
-        inv = Math.inv(sigS, curve.N)
-        u1 = Math.multiply(curve.G, n=(numberMessage * inv) %
-                           curve.N, A=curve.A, P=curve.P, N=curve.N)
-        u2 = Math.multiply(publicKey.point, n=(sigR * inv) %
-                           curve.N, A=curve.A, P=curve.P, N=curve.N)
-        add = Math.add(u1, u2, P=curve.P, A=curve.A)
-        return sigR == add.x
+    # Embed signature at the beginning of message
+    signature = "--BEGIN SIGNATURE--\n" + str(hex(r)) + "\n" + str(hex(s)) + "\n--END SIGNATURE--\n"
+    message = signature + message
+
+    return message
+
+def verify(messageEmbed, publicKey):
+    curve = Curve()
+    inf = float('inf')
+    # Extract signature from message
+    messageArr = messageEmbed.split("\n--END SIGNATURE--\n")
+    message = messageArr[1]
+    signature = messageArr[0].replace("--BEGIN SIGNATURE--\n", "").split("\n")
+    r = int(signature[0], 16)
+    s = int(signature[1], 16)
+
+    if (r >= 1 and r <= curve.n-1 and s >= 1 and s <= curve.n-1):
+        byteMessageDigest = bytearray(sha3(message))
+        e = 0
+        for byte in byteMessageDigest:
+            e += byte
+        w = pow(s, -1, curve.n)
+        u1 = ((e % curve.n) * w) % curve.n
+        u2 = ((r % curve.n) * w) % curve.n
+        X = add(multiply(curve.G, u1), multiply(publicKey, u2))
+        if (X.x == inf):
+            return False
+        X.x = int(X.x)
+        v = X.x % curve.n
+
+        return v == r
+
+    else:
+        return False
