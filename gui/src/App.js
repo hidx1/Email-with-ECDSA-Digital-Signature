@@ -4,6 +4,7 @@ import axios from 'axios';
 import './App.css';
 import NavBar from './component/NavBar';
 import MainContainer from './component/MainContainer';
+import Login from './component/Login'
 
 /**JANGAN LUPA ENABLE CORS DI BROWSER (BISA PAKE CORS EVERYWHERE DI FIREFOX) */
 class App extends React.Component {
@@ -67,7 +68,8 @@ class App extends React.Component {
         ) : (
           <div style={{height: '100vh'}}>
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}>
-              <button type="button" onClick={this.signIn}>Sign In</button>
+              <Login signIn = {this.signIn}></Login>
+             
             </div>
           </div>
         )}  

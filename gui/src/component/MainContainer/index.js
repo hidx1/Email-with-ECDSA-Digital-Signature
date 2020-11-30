@@ -11,30 +11,7 @@ class MainContainer extends React.Component {
       this.state = {
         selectedLabel : 1,
         numberOfSentEmail:0,
-        emails : [
-          {
-            id: 0,
-            labelId: 1,
-            from: 'Yoel pro',
-            subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            time: "11:15"
-          },
-          {
-            id: 1,
-            labelId: 1,
-            from: 'Susanto pro',
-            subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            time: "22:08"
-          },
-          {
-            id: 2,
-            labelId: 1,
-            from: 'Susanto pro 2',
-            subject: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            time: "22:08"
-          }
-  
-        ],
+        emails : [],
         labels:[{
           id : 1,
           name: 'Inbox',
@@ -61,15 +38,20 @@ class MainContainer extends React.Component {
       
       let labels= [...this.state.labels]
 
-      labels[2].emailNumber= this.state.numberOfSentEmail+1
-      labels[0].emailNumber = this.state.emails.length
+      // labels[2].emailNumber= this.state.numberOfSentEmail+1
+      labels[0].emailNumber = inbox.length
   
       this.setState({ labels });
+      this.setState({
+        emails: inbox,
+       
+      });
     }
     handleLabelClick(labelId){
 
       this.setState({
-        selectedLabel: labelId
+        selectedLabel: labelId,
+       
       });
     }
     
@@ -90,8 +72,8 @@ class MainContainer extends React.Component {
   
     render() {
 
-      const filteredEmails = this.state.emails.filter(e => e.labelId & e.labelId == this.state.selectedLabel);
-
+      // const filteredEmails = this.state.emails.filter(e => e.labelId & e.labelId == this.state.selectedLabel);
+      const filteredEmails = this.state.emails
       let content = null;
       if(filteredEmails.length > 0){
          content = <EmailList emails={filteredEmails} />;
