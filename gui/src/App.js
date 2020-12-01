@@ -63,18 +63,18 @@ class App extends React.Component {
     }, 2000);
 
     /***********PAKE INI AJA KALAU UDAH ADA COOKIE*************/
-    // axios({
-    //   url: "https://backend-kripto.yoelsusanto.com/api/email?type=inbox",
-    //   method: "get",
-    //   withCredentials: true,
-    // })
-    // .then((response) => {
-    //   this.setState({
-    //     signedIn: true,
-    //     user: response.data.payload.user_email,
-    //     inbox: response.data.payload.emails
-    //   });
-    // });
+  //   axios({
+  //     url: "https://backend-kripto.yoelsusanto.com/api/email?type=inbox",
+  //     method: "get",
+  //     withCredentials: true,
+  //   })
+  //   .then((response) => {
+  //     this.setState({
+  //       signedIn: true,
+  //       user: response.data.payload.user_email,
+  //       inbox: response.data.payload.emails
+  //     });
+  //   });
   }
 
   render() {

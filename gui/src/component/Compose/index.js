@@ -1,9 +1,8 @@
 import React from 'react';
 import {
-    Toast, ToastBody, ToastHeader,
     Modal,ModalBody,ModalHeader,Form,FormGroup,Input,Label,ModalFooter,Button} from 'reactstrap';
 
-import {EMAIL_URL, SENT_EMAIL} from '../../static/const';
+import {EMAIL_URL} from '../../static/const';
 import axios from 'axios';
 class Compose extends React.Component {
     state = {
@@ -14,7 +13,8 @@ class Compose extends React.Component {
         encrypt: false,
         ttd:false,
         submitted:false,
-        mesg :[]
+        mesg :[],
+        isSuccess:false
 
       }
 
@@ -45,58 +45,51 @@ class Compose extends React.Component {
         const to= formResults.to.value;
         const subject = formResults.subject.value;
         const message = formResults.message.value;
-        const key = this.state.encrypt ? formResults.key.value : null;
-    
-        // "subject": "contoh subject",
-        // "emailText": "contohasdfasdfasfadfadsa",
-        // "key": "contohkunci",
-        // "destination": "13517014@std.stei.itb.ac.id"
-        // const body = {
-        //     destination: to,
-        //     subject: subject,
-        //     emailText: message,
-        //     key: key,
-        // }
+        const key = this.state.encrypt || this.state.ttd? formResults.key.value : null;
+
         const isEncrypt = this.state.encrypt?"true":"false";
         const isDigital = this.state.ttd?"true":"false";
         const sentEmail = EMAIL_URL +'?encrypt='+isEncrypt+"&signature="+isDigital;
-        let status ='';
-        axios({
-          method: 'post',
-          url: sentEmail,
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: {
-            destination: to,
-            subject: subject,
-            emailText: message,
-            key: key
+
+        let passed = false;
+     
+        if (!key && !this.state.encrypt && !this.state.ttd){
+          passed = true
+          console.log('here')
+        } else {
+          if(key.length == 8){
+            passed = true
           }
-        }).then((response2) => {
-          status = response2.status;
-          // if(response2.status === 200){
-          //   status = res
-          // }
-             console.log(response2)
-         
-         
-        });;
-        
-        //   const request = await fetch(url, {
-        //     method: "POST",
-        //     headers: {
-        //       'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(body)
-        //   });
-        // console.log(request)
-        this.setState({ isModalOpen: false ,submitted:!this.state.submitted});
-        if(status == 200){
-          this.props.addSentEmail();
         }
-       
+        if(passed){
+    
+
+          
+      
+          axios({
+            method: 'post',
+            url: sentEmail,
+            withCredentials: true,
+            data: {
+              destination: to,
+              subject: subject,
+              emailText: message,
+              key: key
+            }
+          }).then((response) => {
+            console.log(response)
+            if(response.status == 200){
+        
+              this.props.getInbox();
+              this.props.getSentEmail();
+              this.setState({ isModalOpen: false ,submitted:!this.state.submitted,isSuccess:true});
+            
+            }        
+          
+          });;
+        
+        
+      } 
       }
 
       // end
@@ -105,9 +98,9 @@ class Compose extends React.Component {
       
         <div className="row"> 
           <div className="col-12 col-sm-12 col-md-3 col-lg-2">
-            <a href="#" className="btn btn-danger btn-primary btn-block">
+            <button onClick={this.composekey} className="btn btn-danger btn-primary btn-block">
               <i className="fa fa-edit" onClick={this.composekey}></i> Compose
-            </a>
+            </button>
           </div>
           <Modal isOpen={this.state.isModalOpen} fade={false} toggle={this.toggle}>
           <ModalHeader toggle={this.toggle}>{this.state.modalTitle}</ModalHeader>
@@ -119,7 +112,7 @@ class Compose extends React.Component {
                 </FormGroup>
                 <FormGroup>
                     <Label>Subject</Label>
-                    <Input type='text' name='subject'  required />
+                    <Input type='text' name='subject' required/>
                 </FormGroup>
                 <FormGroup>
                     <Label>Message</Label>
@@ -135,12 +128,7 @@ class Compose extends React.Component {
                     Encrypt message
                     </Label>
                 </FormGroup>
-                {this.state.encrypt?
-                    <FormGroup>
-                    <Label>Encrypt Key</Label>
-                    <Input type='text' name='key'  required />
-                    </FormGroup>:null}
-             
+               
                 <FormGroup check>
                     <Label check>
                     <Input type="checkbox" 
@@ -150,6 +138,13 @@ class Compose extends React.Component {
                     Tambah tanda tangan digital
                     </Label>
                 </FormGroup>
+                {this.state.encrypt || this.state.ttd?
+                    <FormGroup>
+                    <Label>Key</Label>
+                    <Input type='text' name='key'  required />
+                    </FormGroup>:null}
+                    {!this.state.isSuccess?<div className="text-danger">Panjang kunci harus 8 </div>:null}
+             
              
 
                 <span className="fa fa-paperclip">&nbsp;&nbsp;</span>
@@ -160,12 +155,7 @@ class Compose extends React.Component {
             </ModalFooter>
           </Form>
         </Modal>
-        <Toast isOpen={this.state.submitted}>
-        <ToastHeader toggle={this.toggle}>Preview</ToastHeader>
-        <ToastBody>
-          {this.state.mesg.from}
-          </ToastBody>
-        </Toast>
+
 
         </div>
       )

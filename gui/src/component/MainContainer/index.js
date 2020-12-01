@@ -3,7 +3,8 @@ import EmailLabels from '../EmailLabels';
 import EmailList from '../EmailList';
 import Compose from '../Compose';
 import EmptyBox from '../EmptyBox';
-
+import { GET_SENT_EMAILS, SENT_EMAIL,GET_INBOX } from '../../static/const';
+import axios from 'axios';
 class MainContainer extends React.Component {
   
     constructor(props){
@@ -26,6 +27,47 @@ class MainContainer extends React.Component {
         }]
       }
     }
+
+    getInbox(){
+  
+      let inbox ='';
+      
+      axios({
+        url: GET_INBOX,
+        method: "get",
+        withCredentials: true,
+      })
+      .then((response) => {
+             
+    
+        inbox = response.data.payload.emails
+        this.setState({
+        
+       
+         
+          emails:inbox 
+        });
+      });
+    }
+
+    getSentEmail(){
+      let sent='';
+  
+      axios({
+        url: GET_SENT_EMAILS,
+        method: "get",
+        withCredentials: true,
+      })
+      .then((response) => {
+             
+        sent = response.data.payload.emails
+        this.setState({
+    
+          sentEmails:sent,
+       
+        });
+      });
+    }
     componentDidMount(){
   
       const inbox = this.props.inbox;
@@ -36,15 +78,19 @@ class MainContainer extends React.Component {
       let labels= [...this.state.labels]
 
       // labels[2].emailNumber= this.state.numberOfSentEmail+1
-      labels[0].emailNumber = inbox.length
-      labels[1].emailNumber = sentEmails.length
+      labels[0].emailNumber = inbox.length == 0 ?0:inbox.length;
+      labels[1].emailNumber = sentEmails.length == 0 ? 0 : sentEmails.length;
       this.setState({ labels });
+      this.getSentEmail();
+      this.getInbox();
       this.setState({
         emails: inbox,
         sentEmails:sentEmails
        
       });
     }
+
+    
     handleLabelClick(labelId){
     
 
@@ -57,7 +103,7 @@ class MainContainer extends React.Component {
     addSentEmail(){
       let labels= [...this.state.labels]
 
-      labels[2].emailNumber= this.state.numberOfSentEmail+1
+      labels[1].emailNumber= this.state.numberOfSentEmail+1
   
       this.setState({ labels });
       this.setState({
@@ -82,7 +128,7 @@ class MainContainer extends React.Component {
       
       return (
         <div className="container">
-          <Compose addSentEmail={this.addSentEmail.bind(this)}/>
+          <Compose addSentEmail={this.addSentEmail.bind(this)} getInbox={this.getInbox.bind(this)} getSentEmail={this.getSentEmail.bind(this)}/>
           <hr />
 
           <div className="row">
