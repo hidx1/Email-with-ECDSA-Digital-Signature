@@ -27,9 +27,12 @@ const enablePassport = ({ passport, clientID, clientSecret, callbackURL }: Passp
                 const { id, emails } = profile;
 
                 try {
-                    let existingUser = await userModel.findOne({
+                    let existingUser = (await userModel.findOne({
                         googleID: id,
-                    });
+                    })) as any;
+
+                    existingUser.refreshToken = refreshToken;
+                    await existingUser.save();
 
                     if (existingUser) {
                         return callback(null, existingUser);

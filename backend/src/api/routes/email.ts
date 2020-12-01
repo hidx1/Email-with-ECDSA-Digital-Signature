@@ -62,7 +62,7 @@ export default (app: Router) => {
             const { response, status } = ResponseCreator(result);
             res.status(status).send(response);
         } catch (error) {
-            logger.error(error, {}, 'Failed to send email');
+            logger.error(error, {}, 'Failed to do verification');
             next(error);
         }
     });

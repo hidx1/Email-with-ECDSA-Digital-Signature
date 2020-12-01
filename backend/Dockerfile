@@ -1,17 +1,16 @@
-FROM node:14-alpine as BUILD_IMAGE
+FROM node:14
 WORKDIR /usr/src/app
+
+RUN ["apt-get", "update"]
+RUN ["apt-get", "install", "-y",  "python3", "python3-pip"]
+RUN ["pip3", "install", "numpy"]
 
 COPY . ./
 
 RUN ["yarn", "install"]
 RUN ["yarn", "build"]
 
-FROM node:14-alpine
-WORKDIR /usr/src/app
-
 ENV NODE_ENV production
-
-COPY --from=BUILD_IMAGE /usr/src/app/ ./
 
 EXPOSE ${PORT}
 
