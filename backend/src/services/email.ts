@@ -114,8 +114,7 @@ export default class EmailService {
                 }
 
                 if (signature) {
-                    let hash = await this.GenerateHash(plaintext);
-                    emailBody += `\n${hash}`;
+                    emailBody = await this.GenerateMessageWithSignature(emailBody, key);
                 }
 
                 let transport = createTransport(refreshToken, userEmail);
@@ -137,11 +136,23 @@ export default class EmailService {
     }
 
     public async EncryptText(plaintext: string, key: string): Promise<string> {
-        return await this.ExecuteBlockCipher(plaintext, key, true);
+        let base64form = Buffer.from(plaintext).toString('base64');
+        return await this.ExecuteBlockCipher(base64form, key, true);
     }
 
     public async DecryptText(cipherText: string, key: string): Promise<string> {
-        return await this.ExecuteBlockCipher(cipherText, key, false);
+        let base64form = await this.ExecuteBlockCipher(cipherText, key, false);
+        let decodedbase64 = Buffer.from(base64form, 'base64').toString();
+        return decodedbase64;
+    }
+
+    public ProcessKeyToLengthEight(key: string): string {
+        const LENGTH_EIGHT = 8;
+        let refinedKey = key;
+        while (refinedKey.length < LENGTH_EIGHT) {
+            refinedKey += key;
+        }
+        return refinedKey.slice(0, LENGTH_EIGHT);
     }
 
     public ExecuteBlockCipher(content: string, key: string, encrypt: boolean): Promise<string> {
@@ -149,10 +160,11 @@ export default class EmailService {
         if (encrypt) {
             operation = 'true';
         }
+        let refinedKey = this.ProcessKeyToLengthEight(key);
         return new Promise((resolve, reject) => {
             PythonShell.run(
                 `${__dirname}/../../cipher/blockCipher.py`,
-                { args: [content, key, operation] },
+                { args: [content, refinedKey, operation] },
                 (err, result) => {
                     if (err) {
                         return reject(err);
@@ -172,31 +184,53 @@ export default class EmailService {
         };
     }
 
-    public async GenerateHash(text: string, withHeader = true): Promise<string> {
+    public async GenerateMessageWithSignature(text: string, key: string): Promise<string> {
         return new Promise((resolve, reject) => {
-            PythonShell.run(`${__dirname}/../../digital_signature/sha3.py`, { args: [text] }, (err, result) => {
-                if (err) {
-                    return reject(err);
-                }
-                let hash = result[0];
-                if (withHeader) {
-                    let signature = `---BEGIN_SIGNATURE---\n${hash}\n---END_SIGNATURE---`;
+            let asciiValue = this.GetAsciiValue(key).toString();
+            PythonShell.run(
+                `${__dirname}/../../digital_signature/ecdsa.py`,
+                { args: ['sign', text, asciiValue] },
+                (err, result) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    let signature = result.join('\n');
                     resolve(signature);
-                } else {
-                    resolve(hash);
-                }
-            });
+                },
+            );
+        });
+    }
+
+    public async VerifySignature(emailBody: string, key: string): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            let asciiValue = this.GetAsciiValue(key).toString();
+            PythonShell.run(
+                `${__dirname}/../../digital_signature/ecdsa.py`,
+                { args: ['verify', emailBody, asciiValue] },
+                (err, result) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    let signature = result[0] === 'True';
+                    resolve(signature);
+                },
+            );
         });
     }
 
     public ExtractBody(email: string): string {
-        let body = email.match(/(.+)(\r\n)/)[1];
+        let body;
+        let hasKeyComponent = email.match('--BEGIN');
+        if (hasKeyComponent) {
+            body = email.match(/(.+)(\r\n--BEGIN)/)[1].trim();
+        } else {
+            body = email.trim();
+        }
         return body;
     }
 
     public async Verification(body: string, key: string, decrypt: boolean, verifySignature: boolean) {
         let decryptedBody = undefined;
-        let signatureValidity = undefined;
 
         let result = {};
         let emailText = this.ExtractBody(body);
@@ -206,19 +240,19 @@ export default class EmailService {
         }
 
         if (verifySignature) {
-            let signature: string;
-
-            let originalSignature = body.match(/(BEGIN_SIGNATURE---\r\n)(.+)(\r\n---END_SIGNATURE)/)[2];
-            if (decrypt) {
-                signature = await this.GenerateHash(decryptedBody, false);
-            } else {
-                signature = await this.GenerateHash(emailText, false);
-            }
-
-            signatureValidity = signature === originalSignature;
-            result['signature_validity'] = signatureValidity;
+            let replacedNewline = body.trim().replace(/\r\n/g, '\n');
+            result['signature_validity'] = await this.VerifySignature(replacedNewline, key);
         }
 
         return result;
+    }
+
+    public GetAsciiValue(key: string): number {
+        let totalValue = 0;
+        for (let i = 0; i < key.length; i++) {
+            let charValue = key.charCodeAt(i);
+            totalValue += charValue;
+        }
+        return totalValue;
     }
 }
