@@ -1,8 +1,7 @@
 FROM node:14-alpine
 WORKDIR /usr/src/app
 
-RUN ["apt-get", "update"]
-RUN ["apt-get", "install", "python", "-y"]
+RUN ["apk", "add", "--update-cache", "python3" ]
 
 COPY . ./
 
