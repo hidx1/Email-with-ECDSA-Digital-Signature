@@ -33,17 +33,26 @@ def sign(message, privateKey):
 def appendPublic(message, publicKey):
     return message + str(publicKey.x) + "," + str(publicKey.y)
 
-def verify(messageEmbed):
+def testPublicKey(publicKey1, publicKey2):
+    return publicKey1.x == publicKey2.x and publicKey1.y == publicKey2.y and publicKey1.z == publicKey2.z
+
+def verify(messageEmbed, keyToTest):
     curve = Curve()
     inf = float('inf')
     # Extract signature from message
     # messageEmbed = messageEmbed.replace("\\n", "\n")
     messageArr = messageEmbed.split("\n--END SIGNATURE--\n")
+    if (len(messageArr) < 2):
+        return "Message not digitally signed"
 
     publicKeyString = messageArr[1].split(",")
+        
     x_point = int(publicKeyString[0])
     y_point = int(publicKeyString[1])
     publicKey = Point(x_point, y_point)
+
+    if (not testPublicKey(keyToTest, publicKey)):
+        return "Private key does not match used public key"
 
     messageArr2 = messageArr[0].split("\n--BEGIN SIGNATURE--\n")
     signature = messageArr2[1].split("\n")
@@ -74,14 +83,15 @@ def verify(messageEmbed):
 if __name__ == "__main__":
     sign_op = sys.argv[1] == "sign"
     message = sys.argv[2]
+    privateKey = bytearray(sys.argv[3], "utf-8")
+    d = 0
+    for byte in privateKey:
+        d += byte
+    
+    publicKey = generateKey(d)
 
     if (sign_op):
-        privateKey = bytearray(sys.argv[3], "utf-8")
-        d = 0
-        for byte in privateKey:
-            d += byte
-        publicKey = generateKey(d)
         signature = sign(message, d)
         print(appendPublic(signature, publicKey))
     else:
-        print(verify(message))
+        print(verify(message, publicKey))
