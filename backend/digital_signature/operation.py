@@ -1,5 +1,6 @@
 from point import Point
 from curve import Curve
+from helper import *
 
 def add(P, Q):
     curve = Curve()
@@ -19,7 +20,7 @@ def add(P, Q):
         R.y = inf
 
         return R
-    gradien = ((P.y - Q.y) * pow((P.x - Q.x), -1, curve.p)) % curve.p
+    gradien = ((P.y - Q.y) * inverse_mod((P.x - Q.x), curve.p)) % curve.p
     R.x = (gradien ** 2 - P.x - Q.x) % curve.p
     R.y = (gradien * (P.x - R.x) - P.y) % curve.p
 
@@ -35,7 +36,7 @@ def double(P):
         R.y = inf
 
         return R
-    gradien = ((3 * (P.x ** 2) + a) * pow(2 * P.y, -1, curve.p)) % curve.p
+    gradien = ((3 * (P.x ** 2) + a) * inverse_mod(2 * P.y, curve.p)) % curve.p
     R.x = (gradien ** 2 - 2 * P.x) % curve.p
     R.y = (gradien * (P.x - R.x) - P.y) % curve.p
 
