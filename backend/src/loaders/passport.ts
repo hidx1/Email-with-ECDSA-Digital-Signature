@@ -31,10 +31,9 @@ const enablePassport = ({ passport, clientID, clientSecret, callbackURL }: Passp
                         googleID: id,
                     })) as any;
 
-                    existingUser.refreshToken = refreshToken;
-                    await existingUser.save();
-
                     if (existingUser) {
+                        existingUser.refreshToken = refreshToken;
+                        await existingUser.save();
                         return callback(null, existingUser);
                     }
 
