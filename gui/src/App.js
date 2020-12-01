@@ -5,7 +5,7 @@ import './App.css';
 import NavBar from './component/NavBar';
 import MainContainer from './component/MainContainer';
 import Login from './component/Login'
-
+import {GET_INBOX,GET_SENT_EMAILS,SIGN_IN} from './static/const'
 /**JANGAN LUPA ENABLE CORS DI BROWSER (BISA PAKE CORS EVERYWHERE DI FIREFOX) */
 class App extends React.Component {
   constructor(props) {
@@ -14,30 +14,51 @@ class App extends React.Component {
       signedIn: false,
       user: null,
       inbox: null,
+      sentEmails : null,
     }
     this.signIn = this.signIn.bind(this);
   }
 
   signIn() {
     /****************PAKE INI KALAU BELUM ADA COOKIE**************************/
-    let signInWindow = window.open("https://backend-kripto.yoelsusanto.com/api/gauth/authorization_url", "_blank", "status=yes");
+    let signInWindow = window.open(SIGN_IN, "_blank", "status=yes");
     let thats = this;
+    let user='';
+    let inbox ='';
+    let sent='';
     let timer = setInterval(function() {
       let that = thats;
+
       if (signInWindow.closed) {
         clearInterval(timer);
         axios({
-          url: "https://backend-kripto.yoelsusanto.com/api/email?type=inbox",
+          url: GET_INBOX,
           method: "get",
           withCredentials: true,
         })
         .then((response) => {
-          that.setState({
-            signedIn: true,
-            user: response.data.payload.user_email,
-            inbox: response.data.payload.emails
-          });
+          if(response.status === 200){
+            user = response.data.payload.user_email
+            inbox = response.data.payload.emails
+              axios({
+                url: GET_SENT_EMAILS,
+                method: "get",
+                withCredentials: true,
+              })
+              .then((response2) => {
+             
+                sent = response2.data.payload.emails
+                that.setState({
+                  signedIn: true,
+                  sentEmails:sent,
+                  user:user,
+                  inbox:inbox 
+                });
+              });
+          }
+
         });
+
       }
     }, 2000);
 
@@ -57,13 +78,15 @@ class App extends React.Component {
   }
 
   render() {
-    const { signedIn, user, inbox } = this.state;
+    const { signedIn, user, inbox} = this.state;
+    
+
     return (
       <div>
         {signedIn ? (
           <div>
             <NavBar title="Kripto Email Client" user={user} />
-            <MainContainer inbox={inbox}/>
+            <MainContainer inbox={this.state.inbox} sentEmails ={this.state.sentEmails}/>
           </div>
         ) : (
           <div style={{height: '100vh'}}>
