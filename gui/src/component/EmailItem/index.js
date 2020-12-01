@@ -25,8 +25,8 @@ class EmailItem extends React.Component {
             </div>
   
             {/* &nbsp;&nbsp;<span className="fa fa-star-o"></span>&nbsp;&nbsp; */}
-            <span className="name"><b> {this.props.email.sender}</b></span> 
-            <span>{this.props.email.subject}</span>
+            <span className="name">&nbsp;<b> {this.props.email.sender}</b></span> 
+            <span>&nbsp;{this.props.email.subject}</span>
             
             <span className="ml-auto p-2">
               {/* <span className="fa fa-paperclip">&nbsp;&nbsp;</span> */}
