@@ -111,7 +111,7 @@ def keccak(rate, capacity, msg, suffix, output_length):
 
   return result
 
-def sha3(message, rate=576, capacity=1024):
+def sha3(message, rate=1088, capacity=512):
   msg = bytearray(message, "cp1252")
   suffix = 0x06
   is_sha3 = True
@@ -134,6 +134,7 @@ def sha3(message, rate=576, capacity=1024):
 if __name__ == "__main__":
   input_string = sys.argv[1]
   result = sha3(input_string)
-  result = binascii.hexlify(result).upper()
-  result = result.decode("cp1252")
   print(result)
+  # result = binascii.hexlify(result).upper()
+  # result = result.decode("cp1252")
+  # print(result)
