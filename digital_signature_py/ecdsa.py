@@ -2,6 +2,7 @@ from operation import *
 from curve import Curve
 import random
 from sha3 import *
+from point import Point
 
 def generateKey():
     curve = Curve()
@@ -39,6 +40,7 @@ def verify(messageEmbed, publicKey):
     curve = Curve()
     inf = float('inf')
     # Extract signature from message
+    # messageEmbed = messageEmbed.replace("\\n", "\n")
     messageArr = messageEmbed.split("\n--END SIGNATURE--\n")
     message = messageArr[1]
     signature = messageArr[0].replace("--BEGIN SIGNATURE--\n", "").split("\n")
@@ -63,3 +65,21 @@ def verify(messageEmbed, publicKey):
 
     else:
         return False
+
+if __name__ == "__main__":
+    sign_op = sys.argv[1] == "sign"
+    message = sys.argv[2]
+
+    if (sign_op):
+        publicKey, privateKey = generateKey()
+        print(publicKey.x)
+        print(publicKey.y)
+        print(sign(message, privateKey))
+    else:
+        if (len(sys.argv) >= 5):
+            x = int(sys.argv[3])
+            y = int(sys.argv[4])
+            publicKey = Point(x,y,0)
+            print(verify(message, publicKey))
+        else:
+            print("Verification need x and y of public key")
