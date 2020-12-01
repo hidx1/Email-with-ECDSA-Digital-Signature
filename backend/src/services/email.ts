@@ -137,7 +137,7 @@ export default class EmailService {
     }
 
     public async EncryptText(plaintext: string, key: string): Promise<string> {
-        return await this.ExecuteBlockCipher(plaintext, key, false);
+        return await this.ExecuteBlockCipher(plaintext, key, true);
     }
 
     public async DecryptText(cipherText: string, key: string): Promise<string> {
