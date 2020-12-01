@@ -81,17 +81,20 @@ def verify(messageEmbed, keyToTest):
         return False
 
 if __name__ == "__main__":
-    sign_op = sys.argv[1] == "sign"
-    message = sys.argv[2]
-    privateKey = bytearray(sys.argv[3], "utf-8")
-    d = 0
-    for byte in privateKey:
-        d += byte
-    
-    publicKey = generateKey(d)
-
-    if (sign_op):
-        signature = sign(message, d)
-        print(appendPublic(signature, publicKey))
+    if (len(sys.argv) < 4):
+        print("Argument must be python ecdsa.py [sign/verify] [message] [private_key]")
     else:
-        print(verify(message, publicKey))
+        sign_op = sys.argv[1] == "sign"
+        message = sys.argv[2]
+        privateKey = bytearray(sys.argv[3], "utf-8")
+        d = 0
+        for byte in privateKey:
+            d += byte
+        
+        publicKey = generateKey(d)
+
+        if (sign_op):
+            signature = sign(message, d)
+            print(appendPublic(signature, publicKey))
+        else:
+            print(verify(message, publicKey))
