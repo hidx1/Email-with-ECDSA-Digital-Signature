@@ -3,6 +3,7 @@ from curve import Curve
 import random
 from sha3 import *
 from point import Point
+from helper import *
 
 def generateKey(d):
     curve = Curve()
@@ -17,7 +18,7 @@ def sign(message, privateKey):
         R = multiply(curve.G, k)
         R.x = int(R.x)
         r = R.x % curve.n
-        modResult = pow(k, -1, curve.n)
+        modResult = inverse_mod(k, curve.n)
         byteMessageDigest = bytearray(sha3(message))
         e = 0
         for byte in byteMessageDigest:
@@ -66,7 +67,7 @@ def verify(messageEmbed, keyToTest):
         e = 0
         for byte in byteMessageDigest:
             e += byte
-        w = pow(s, -1, curve.n)
+        w = inverse_mod(s, curve.n)
         u1 = ((e % curve.n) * w) % curve.n
         u2 = ((r % curve.n) * w) % curve.n
         X = add(multiply(curve.G, u1), multiply(publicKey, u2))
