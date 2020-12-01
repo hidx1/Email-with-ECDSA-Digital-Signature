@@ -3,6 +3,8 @@ import {
     Toast, ToastBody, ToastHeader,
     Modal,ModalBody,ModalHeader,Form,FormGroup,Input,Label,ModalFooter,Button} from 'reactstrap';
 
+import {EMAIL_URL, SENT_EMAIL} from '../../static/const';
+import axios from 'axios';
 class Compose extends React.Component {
     state = {
         
@@ -40,22 +42,60 @@ class Compose extends React.Component {
         e.preventDefault();
     
         const formResults = e.target.elements;
-        const from = formResults.from.value;
+        const to= formResults.to.value;
         const subject = formResults.subject.value;
         const message = formResults.message.value;
         const key = this.state.encrypt ? formResults.key.value : null;
     
-
-        const body = {
-            from: from,
+        // "subject": "contoh subject",
+        // "emailText": "contohasdfasdfasfadfadsa",
+        // "key": "contohkunci",
+        // "destination": "13517014@std.stei.itb.ac.id"
+        // const body = {
+        //     destination: to,
+        //     subject: subject,
+        //     emailText: message,
+        //     key: key,
+        // }
+        const isEncrypt = this.state.encrypt?"true":"false";
+        const isDigital = this.state.ttd?"true":"false";
+        const sentEmail = EMAIL_URL +'?encrypt='+isEncrypt+"&signature="+isDigital;
+        let status ='';
+        axios({
+          method: 'post',
+          url: sentEmail,
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: {
+            destination: to,
             subject: subject,
-            message: message,
-            key: key,
+            emailText: message,
+            key: key
           }
-  
-    
-        this.setState({ isModalOpen: false ,submitted:!this.state.submitted,mesg:body});
-        this.props.addSentEmail();
+        }).then((response2) => {
+          status = response2.status;
+          // if(response2.status === 200){
+          //   status = res
+          // }
+             console.log(response2)
+         
+         
+        });;
+        
+        //   const request = await fetch(url, {
+        //     method: "POST",
+        //     headers: {
+        //       'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(body)
+        //   });
+        // console.log(request)
+        this.setState({ isModalOpen: false ,submitted:!this.state.submitted});
+        if(status == 200){
+          this.props.addSentEmail();
+        }
        
       }
 
@@ -74,8 +114,8 @@ class Compose extends React.Component {
           <Form onSubmit={this.onSubmitForm} autoComplete='off'>
             <ModalBody>
                 <FormGroup>
-                    <Label>From</Label>
-                    <Input type='text' name='from'  required />
+                    <Label>To</Label>
+                    <Input type='text' name='to'  required />
                 </FormGroup>
                 <FormGroup>
                     <Label>Subject</Label>

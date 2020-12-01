@@ -28,7 +28,7 @@ class EmailList extends React.Component {
         <div>
       
           <ul className="nav nav-tabs">
-            <Tab name="Inbox" activeTab={true} icon="fa-inbox" />
+            <Tab name={this.props.labelId == 1?"Inbox":"Sent"} activeTab={true} icon={this.props.labelId == 1?"fa-inbox":"fa-paper-plane"} />
             
           </ul>
           <div className="list-group">

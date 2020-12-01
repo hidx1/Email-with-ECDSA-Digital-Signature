@@ -11,43 +11,42 @@ class MainContainer extends React.Component {
       this.state = {
         selectedLabel : 1,
         numberOfSentEmail:0,
+        filteredEmails:[],
         emails : [],
+        sentEmails:[],
         labels:[{
           id : 1,
           name: 'Inbox',
           emailNumber : 0
         },{
           id : 2,
-          name: 'Important',
-          emailNumber : 0
-        },{
-          id : 3,
           name: 'Sent',
           emailNumber : 0
           
-        },{
-          id : 4,
-          name: 'Trash',
-          emailNumber : 0
         }]
       }
     }
     componentDidMount(){
-      const { inbox } = this.props;
-      console.log(inbox)
+  
+      const inbox = this.props.inbox;
+      const sentEmails = this.props.sentEmails;
+   
+
       
       let labels= [...this.state.labels]
 
       // labels[2].emailNumber= this.state.numberOfSentEmail+1
       labels[0].emailNumber = inbox.length
-  
+      labels[1].emailNumber = sentEmails.length
       this.setState({ labels });
       this.setState({
         emails: inbox,
+        sentEmails:sentEmails
        
       });
     }
     handleLabelClick(labelId){
+    
 
       this.setState({
         selectedLabel: labelId,
@@ -72,11 +71,11 @@ class MainContainer extends React.Component {
   
     render() {
 
-      // const filteredEmails = this.state.emails.filter(e => e.labelId & e.labelId == this.state.selectedLabel);
-      const filteredEmails = this.state.emails
+      const filteredEmails =  this.state.selectedLabel == 1 ? this.state.emails : this.state.sentEmails;
+      // const filteredEmails = this.state.emails
       let content = null;
       if(filteredEmails.length > 0){
-         content = <EmailList emails={filteredEmails} />;
+         content = <EmailList emails={filteredEmails} labelId = {this.state.selectedLabel}/>;
       } else {
          content = <EmptyBox />;
       }
