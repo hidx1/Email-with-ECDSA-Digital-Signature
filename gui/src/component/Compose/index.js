@@ -77,7 +77,7 @@ class Compose extends React.Component {
               key: key
             }
           }).then((response) => {
-            console.log(response)
+          
             if(response.status == 200){
         
               this.props.getInbox();
@@ -147,7 +147,7 @@ class Compose extends React.Component {
              
              
 
-                <span className="fa fa-paperclip">&nbsp;&nbsp;</span>
+                {/* <span className="fa fa-paperclip">&nbsp;&nbsp;</span> */}
             </ModalBody>
             <ModalFooter>
               <Button color='primary'>Send</Button>{' '}

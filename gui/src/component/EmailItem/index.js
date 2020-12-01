@@ -24,12 +24,12 @@ class EmailItem extends React.Component {
               <input type="checkbox" />
             </div>
   
-            &nbsp;&nbsp;<span className="fa fa-star-o"></span>&nbsp;&nbsp;
-            <span className="name"><b>{this.props.email.sender}</b></span> 
+            {/* &nbsp;&nbsp;<span className="fa fa-star-o"></span>&nbsp;&nbsp; */}
+            <span className="name"><b> {this.props.email.sender}</b></span> 
             <span>{this.props.email.subject}</span>
             
             <span className="ml-auto p-2">
-              <span className="fa fa-paperclip">&nbsp;&nbsp;</span>
+              {/* <span className="fa fa-paperclip">&nbsp;&nbsp;</span> */}
               <span className="badge badge-default badge-pill">{formatDate}</span>
             </span>
           </li>
