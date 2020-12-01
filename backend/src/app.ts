@@ -1,8 +1,9 @@
 import 'reflect-metadata'; // We need this in order to use @Decorators
 import config from './config';
 import express from 'express';
-import Logger from './loaders/logger';
+import logger from './loaders/logger';
 import loader from './loaders';
+import { createExceptionHandler } from './utils/utils';
 
 async function startServer() {
     const app = express();
@@ -10,12 +11,19 @@ async function startServer() {
     await loader({ expressApp: app });
 
     app.listen(config.port, () => {
-        Logger.info(`
+        logger.info(`
         ################################################
         🛡️  Server listening on port: ${config.port} 🛡️
         ################################################
         `);
     });
+
+    const exceptionHandler = createExceptionHandler(logger);
+
+    process.on('uncaughtException', exceptionHandler(1, 'Uncaught Exception'));
+    process.on('unhandledRejection', exceptionHandler(1, 'Unhandled Rejection'));
+    process.on('SIGTERM', exceptionHandler(0, 'SIGTERM'));
+    process.on('SIGINT', exceptionHandler(0, 'SIGINT'));
 }
 
 try {
@@ -23,5 +31,5 @@ try {
         throw err;
     });
 } catch (error) {
-    Logger.error(error, 'Initialization error');
+    logger.error(error, 'Initialization error');
 }
