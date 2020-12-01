@@ -1,7 +1,9 @@
 FROM node:14
 WORKDIR /usr/src/app
 
-RUN ["apk", "add", "--update-cache", "python3" ]
+RUN ["apt-get", "update"]
+RUN ["apt-get", "install", "python3", "-y"]
+RUN ["pip3", "install", "numpy"]
 
 COPY . ./
 
