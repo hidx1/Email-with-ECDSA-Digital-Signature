@@ -201,12 +201,11 @@ export default class EmailService {
         });
     }
 
-    public async VerifySignature(emailBody: string, key: string): Promise<boolean> {
+    public async VerifySignature(emailBody: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            let asciiValue = this.GetAsciiValue(key).toString();
             PythonShell.run(
                 `${__dirname}/../../digital_signature/ecdsa.py`,
-                { args: ['verify', emailBody, asciiValue] },
+                { args: ['verify', emailBody] },
                 (err, result) => {
                     if (err) {
                         return reject(err);
@@ -241,7 +240,7 @@ export default class EmailService {
 
         if (verifySignature) {
             let replacedNewline = body.trim().replace(/\r\n/g, '\n');
-            result['signature_validity'] = await this.VerifySignature(replacedNewline, key);
+            result['signature_validity'] = await this.VerifySignature(replacedNewline);
         }
 
         return result;
