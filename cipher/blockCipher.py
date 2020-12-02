@@ -139,9 +139,12 @@ if __name__ == "__main__":
         mode = "cbc"
         output_name = False
 
-        bc = BlockCipher()
-        bc.set_initial(encrypt, input_string, is_file)
-        bc.set_key(key)
-        bc.execute(mode, encrypt)
-        result = bc.write_result(encrypt, output_name, is_file)
-        print(result)
+        try:
+            bc = BlockCipher()
+            bc.set_initial(encrypt, input_string, is_file)
+            bc.set_key(key)
+            bc.execute(mode, encrypt)
+            result = bc.write_result(encrypt, output_name, is_file)
+            print(result)
+        except:
+            print("Message is not ciphertext")
