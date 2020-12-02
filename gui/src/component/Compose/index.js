@@ -98,7 +98,7 @@ class Compose extends React.Component {
       
         <div className="row"> 
           <div className="col-12 col-sm-12 col-md-3 col-lg-2">
-            <button onClick={this.composekey} className="btn btn-danger btn-primary btn-block">
+            <button onClick={this.composekey} style={{cursor:'pointer'}} className="btn btn-danger btn-primary btn-block">
               <i className="fa fa-edit" onClick={this.composekey}></i> Compose
             </button>
           </div>
@@ -125,7 +125,7 @@ class Compose extends React.Component {
                     id="checkbox1" 
                     defaultChecked={this.state.encrypt}
                     onChange={this.handleEncryptCheckBox} />
-                    Encrypt message
+                    &nbsp;Encrypt message
                     </Label>
                 </FormGroup>
                
@@ -135,7 +135,7 @@ class Compose extends React.Component {
                     id="checkbox2" 
                     defaultChecked={this.state.ttd}
                     onChange={this.handleTTDCheckBox} />
-                    Tambah tanda tangan digital
+                    &nbsp;Tambah tanda tangan digital
                     </Label>
                 </FormGroup>
                 {this.state.encrypt || this.state.ttd?

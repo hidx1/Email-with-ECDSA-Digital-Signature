@@ -8,7 +8,7 @@ class LabelItem extends React.Component {
     
     render(){ 
       return (
-          <li className="list-group-item justify-content-between" onClick={this.handleClick.bind(this)}>
+          <li className="list-group-item justify-content-between" style={{cursor:'pointer'}} onClick={this.handleClick.bind(this)}>
             {this.props.label.name}
             <span className="badge badge-default badge-pill">{this.props.label.emailNumber}</span>
           </li>

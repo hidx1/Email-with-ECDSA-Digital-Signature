@@ -71,6 +71,7 @@ class EmailList extends React.Component {
       .then((response) => {
       
       if(response.status == 200){
+        
         this.setState({
     
           isValid:response.data.payload.signature_validity,
@@ -79,6 +80,7 @@ class EmailList extends React.Component {
        
         });
       }
+      console.log(this.state.isValid)
       });
     }
     }
@@ -107,8 +109,8 @@ class EmailList extends React.Component {
     
             <ModalBody style={{textAlign: 'left'}} >
               <b> {this.state.email.sender}</b> {formatTime}
-              <b>  </b>{this.state.isSuccess?<Badge color={this.state.isValid?"primary":"warning"}>{this.state.isValid?"Verify":"Tidak Valid"}</Badge>:null}
-              <p style={{wordBreak:"break-all"}}>{this.state.isSuccess && this.state.decrypt?this.state.message:this.state.email.body}</p>
+              <b>  </b>{this.state.isSuccess?<Badge color={this.state.isValid?"primary":"warning"}>{this.state.verify?this.state.isValid?"Verify":"Tidak Valid":null}</Badge>:null}
+              <p style={{wordBreak:"break-all"}}>{this.state.decrypt?this.state.isSuccess?this.state.message:this.state.email.body:this.state.email.body}</p>
             </ModalBody>  
             <ModalFooter>
             <Form onSubmit={this.getProcessMessage} autoComplete='off'>
@@ -118,7 +120,7 @@ class EmailList extends React.Component {
                     id="checkbox1" 
                     defaultChecked={this.state.decrypt}
                     onChange={this.handleDecryptCheckBox} />
-                    Decrypt message
+                    &nbsp;Decrypt message
                     </Label>
                 </FormGroup>
                
@@ -129,7 +131,7 @@ class EmailList extends React.Component {
                     id="checkbox2" 
                     defaultChecked={this.state.verify}
                     onChange={this.handleVerifyCheckBox} />
-                    Verifikasi
+                    &nbsp;Verifikasi
                     </Label>
                     
                 </FormGroup>
@@ -141,7 +143,7 @@ class EmailList extends React.Component {
                     {!this.state.isSuccess?<div className="text-danger">Panjang kunci harus 8 </div>:null}
                     </FormGroup>:null}
                   
-                  <Button color='primary'>Check</Button>{' '}
+                  <Button style={{cursor:'pointer'}} color='primary'>Check</Button>{' '}
                   </Form>
             </ModalFooter>
           
