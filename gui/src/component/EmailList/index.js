@@ -109,7 +109,7 @@ class EmailList extends React.Component {
     
             <ModalBody style={{textAlign: 'left'}} >
               <b> {this.state.email.sender}</b> {formatTime}
-              <b>  </b>{this.state.isSuccess?<Badge color={this.state.isValid?"primary":"warning"}>{this.state.verify?this.state.isValid?"Verify":"Tidak Valid":null}</Badge>:null}
+              <b>  </b>{this.state.isSuccess?<Badge color={this.state.isValid?"primary":"warning"}>{this.state.verify?this.state.isValid?"Valid":"Tidak Valid":null}</Badge>:null}
               <p style={{wordBreak:"break-all"}}>{this.state.decrypt?this.state.isSuccess?this.state.message:this.state.email.body:this.state.email.body}</p>
             </ModalBody>  
             <ModalFooter>
