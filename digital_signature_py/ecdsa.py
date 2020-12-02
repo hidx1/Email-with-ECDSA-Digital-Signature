@@ -90,10 +90,6 @@ if __name__ == "__main__":
                 for byte in privateKey:
                     d += byte 
                 publicKey = generateKey(d)
-                privateKey = bytearray("krptogrf", "utf-8")
-                d = 0
-                for byte in privateKey:
-                    d += byte 
                 signature = sign(message, d)
                 print(appendPublic(signature, publicKey))
         else:
