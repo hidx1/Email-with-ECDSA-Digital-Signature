@@ -24,7 +24,8 @@ No  | Prerequisite
 * Navigasi ke folder **gui**
 * > npm -i install
 * > npm run start
-* Sign in .
+* Aktifkan CORS
+* Sign in dengan email yang telah terdaftar di server
 * Allow access 
 * Tutup window untuk sign in
 * Tunggu sebentar, akan tertampil email.
