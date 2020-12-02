@@ -34,10 +34,7 @@ def sign(message, privateKey):
 def appendPublic(message, publicKey):
     return message + str(publicKey.x) + "," + str(publicKey.y)
 
-def testPublicKey(publicKey1, publicKey2):
-    return publicKey1.x == publicKey2.x and publicKey1.y == publicKey2.y and publicKey1.z == publicKey2.z
-
-def verify(messageEmbed, keyToTest):
+def verify(messageEmbed):
     curve = Curve()
     inf = float('inf')
     # Extract signature from message
@@ -51,9 +48,6 @@ def verify(messageEmbed, keyToTest):
     x_point = int(publicKeyString[0])
     y_point = int(publicKeyString[1])
     publicKey = Point(x_point, y_point)
-
-    if (not testPublicKey(keyToTest, publicKey)):
-        return "Private key does not match used public key"
 
     messageArr2 = messageArr[0].split("\n--BEGIN SIGNATURE--\n")
     signature = messageArr2[1].split("\n")
@@ -82,20 +76,25 @@ def verify(messageEmbed, keyToTest):
         return False
 
 if __name__ == "__main__":
-    if (len(sys.argv) < 4):
-        print("Argument must be python ecdsa.py [sign/verify] [message] [private_key]")
+    if (len(sys.argv) < 3):
+        print("Argument must be python ecdsa.py [sign] [message] [private_key] or python ecdsa.py [verify] [message]")
     else:
         sign_op = sys.argv[1] == "sign"
         message = sys.argv[2]
-        privateKey = bytearray(sys.argv[3], "utf-8")
-        d = 0
-        for byte in privateKey:
-            d += byte
-        
-        publicKey = generateKey(d)
-
-        if (sign_op):
-            signature = sign(message, d)
-            print(appendPublic(signature, publicKey))
+        if (sign_op) :
+            if (len(sys.argv) < 4):
+                print("Argument must be python ecdsa.py [sign] [message] [private_key] or python ecdsa.py [verify] [message]")
+            else:
+                privateKey = bytearray(sys.argv[3], "utf-8")
+                d = 0
+                for byte in privateKey:
+                    d += byte 
+                publicKey = generateKey(d)
+                privateKey = bytearray("krptogrf", "utf-8")
+                d = 0
+                for byte in privateKey:
+                    d += byte 
+                signature = sign(message, d)
+                print(appendPublic(signature, publicKey))
         else:
-            print(verify(message, publicKey))
+            print(verify(message))
