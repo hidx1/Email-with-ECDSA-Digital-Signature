@@ -48,7 +48,7 @@ class EmailList extends React.Component {
       const isVerify = this.state.verify?"true":"false";
       let url =EMAIL_URL+'verification?decrypt='+isDecrypt+'&verify_signature='+isVerify;
       let body = this.state.email.body;
-      const key = this.state.decrypt || this.state.verify? formResults.key.value : null;
+      const key = this.state.decrypt ?formResults.key.value : null;
       let passed = false;
       if (!key && !this.state.encrypt && !this.state.ttd){
         passed = true
