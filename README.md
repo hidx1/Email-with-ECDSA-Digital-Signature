@@ -17,7 +17,7 @@ Ini merupakan sebuah program client e-mail yang dapat melakukan enkripsi dengan 
 |2. | CORS **harus** diaktifkan sebelum menjalankan program                            |
 |3. | Contoh extension CORS untuk Chrome : **Allow CORS: Access-Control-Allow-Origin** |
 |4. | Contoh extension CORS untuk Firefox : **CORS Everywhere**                        |
-|5. | Versi python >=3.8                                                               |
+|5. | Versi python >=3.5                                                               |
 
 ## Run program 
 1. Navigasi ke folder **gui**
