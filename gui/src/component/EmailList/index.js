@@ -135,7 +135,7 @@ class EmailList extends React.Component {
                     </Label>
                     
                 </FormGroup>
-                {this.state.decrypt || this.state.verify?
+                {this.state.decrypt?
 
                     <FormGroup>
                     <Label>Key</Label>
